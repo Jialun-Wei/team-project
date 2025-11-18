@@ -59,6 +59,6 @@ public class LoginView extends JFrame {
             showSignUpView.run();    // trigger the callback to open SignUpView
             dispose();               // close the current window
         });
+
     }
 }
-

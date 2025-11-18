@@ -23,10 +23,12 @@ import javax.swing.*;
 public class Main {
 
     private static DataSource dataSource;
-    private static JdbcUserRepository userRepository;
+    private static RegisteredUserRepository userRepository;
+    private static RegisteredExpenseRepository expenseRepository;
 
     private static SignUpController signUpController;
     private static LoginController loginController;
+    private static DashboardController dashboardController;
 
     private static JFrame currentFrame;
     private static String currentUsername; // add a new global variable
@@ -46,9 +48,10 @@ public class Main {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             // Setup database
-            dataSource = DataSourceFactory.sqlite("app.db");
-            SchemaInitializer.ensureSchema(dataSource);
-            userRepository = new JdbcUserRepository(dataSource);
+            dataSource = DataSourceFactory.sqlite("sqllite.db");
+            TableInitializer.ensureSchema(dataSource);
+            userRepository = new RegisteredUserRepository(dataSource);
+            expenseRepository = new RegisteredExpenseRepository(dataSource);
 
             // Create interactors
             SignUpInteractor signUpInteractor = new SignUpInteractor(userRepository);
@@ -57,6 +60,7 @@ public class Main {
             // Create controllers
             signUpController = new SignUpController(signUpInteractor);
             loginController = new LoginController(loginInteractor);
+            dashboardController = new DashboardController();
 
             // Start application on the login screen
             showLoginView();
@@ -65,7 +69,6 @@ public class Main {
 
     /** Displays the login window */
     private static void showLoginView() {
-        // Close any open frame first
         if (currentFrame != null) currentFrame.dispose();
 
         LoginView loginView = new LoginView(
@@ -91,8 +94,7 @@ public class Main {
         signUpView.setVisible(true);
     }
 
-    /** Displays the dashboard window after login */
-    private static void showDashboardView() {
+    private static void showDashboardView(String username) {
         if (currentFrame != null) currentFrame.dispose();
 
         DashboardView dashboardView = new DashboardView(

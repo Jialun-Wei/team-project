@@ -6,9 +6,6 @@ import use_case.signup.SignUpOutputData;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * The sign-up window that allows the user to create a new account.
- */
 public class SignUpView extends JFrame {
 
     private final JTextField usernameField = new JTextField(15);
@@ -31,10 +28,9 @@ public class SignUpView extends JFrame {
         panel.add(backToLoginButton);
         add(panel);
 
-        // ====== Sign-Up Button Action ======
         signUpButton.addActionListener(e -> {
             String username = usernameField.getText();
-            String password = new String(passwordField.getPassword()); // fixed
+            String password = new String(passwordField.getPassword());
 
             SignUpOutputData output = signUpController.signUp(username, password);
             JOptionPane.showMessageDialog(this, output.getMessage());
@@ -47,7 +43,6 @@ public class SignUpView extends JFrame {
             }
         });
 
-        // ====== Back to Login Button Action ======
         backToLoginButton.addActionListener(e -> {
             showLoginView.run();
             dispose();
