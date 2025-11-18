@@ -1,6 +1,6 @@
 package ui;
 
-import controllers.SignUpController;
+import interface_adapters.controllers.SignUpController;
 import use_case.signup.SignUpOutputData;
 
 import javax.swing.*;
@@ -15,11 +15,11 @@ public class SignUpView extends JFrame {
 
     public SignUpView(SignUpController signUpController, Runnable showLoginView) {
         setTitle("Sign Up");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(300, 180);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setSize(450, 250);
         setLocationRelativeTo(null);
 
-        JPanel panel = new JPanel(new GridLayout(3, 2, 5, 5));
+        JPanel panel = new JPanel(new GridLayout(3, 2, 10, 10));
         panel.add(new JLabel("Username:"));
         panel.add(usernameField);
         panel.add(new JLabel("Password:"));

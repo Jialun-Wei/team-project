@@ -6,14 +6,28 @@ import data.ExpenseRepository;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * The main dashboard screen shown after successful login.
+ * Acts as a navigation hub to different use cases in the FinWise app.
+ */
 public class DashboardView extends JFrame {
 
-    private final DashboardController controller;
-    private final Runnable onLogout;
-    private final String username;
-    private final ExpenseRepository expenseRepository;
+    public DashboardView(
+            Runnable onLogout,
+            Runnable onTrackExpenses,
+            Runnable onFinancialTrends,
+            Runnable onStockPrices,
+            Runnable onSimulatedInvestment,
+            Runnable onPortfolioAnalysis,
+            Runnable onMarketNews
+    ) {
+        setTitle("FinWise Dashboard");
+        setSize(600, 400);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
 
-    private final JTabbedPane tabs = new JTabbedPane();
+        // Layout Setup
+        JPanel mainPanel = new JPanel(new BorderLayout());
 
     // Indices for tabs
     private static final int HOME_TAB = 0;
@@ -21,12 +35,8 @@ public class DashboardView extends JFrame {
     private static final int TRACKER_TAB = 2;
     private static final int STOCK_TAB = 3;
 
-    public DashboardView(DashboardController controller, Runnable onLogout, String username,
-                         ExpenseRepository expenseRepository) {
-        this.controller = controller;
-        this.onLogout = onLogout;
-        this.username = username;
-        this.expenseRepository = expenseRepository;
+        // Buttons for Use Cases
+        JPanel buttonPanel = new JPanel(new GridLayout(3, 2, 10, 10));
 
         setTitle("Dashboard");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -50,21 +60,21 @@ public class DashboardView extends JFrame {
         tabs.addTab("Tracker", buildTabPlaceholder("Open the Tracker window…"));
         tabs.addTab("Stock", buildTabPlaceholder("Open the Stock window…"));
 
-        // When user selects a tab, open a new window and reset back to Home
-        tabs.addChangeListener(e -> {
-            int idx = tabs.getSelectedIndex();
-            if (idx == HOME_TAB) return;
+        // Logout Button
+        JButton logoutBtn = new JButton("Logout");
+        mainPanel.add(logoutBtn, BorderLayout.SOUTH);
 
-            switch (idx) {
-                case NEWS_TAB -> SwingUtilities.invokeLater(() -> new ui.NewsView().setVisible(true));
-                case TRACKER_TAB -> SwingUtilities.invokeLater(() ->
-                        new ui.TrackerView(username, expenseRepository).setVisible(true));
-                case STOCK_TAB -> SwingUtilities.invokeLater(() -> new ui.StockView().setVisible(true));
-                default -> {}
-            }
-            // Reset to Home to avoid repeated auto-opens on focus changes
-            tabs.setSelectedIndex(HOME_TAB);
+        // Add action listeners (connect each button to its callback)
+        logoutBtn.addActionListener(e -> {
+            onLogout.run();
+            dispose();
         });
+        expensesBtn.addActionListener(e -> onTrackExpenses.run());
+        trendsBtn.addActionListener(e -> onFinancialTrends.run());
+        stockBtn.addActionListener(e -> onStockPrices.run());
+        investBtn.addActionListener(e -> onSimulatedInvestment.run());
+        portfolioBtn.addActionListener(e -> onPortfolioAnalysis.run());
+        newsBtn.addActionListener(e -> onMarketNews.run());
 
         // Layout
         setLayout(new BorderLayout(8, 8));
@@ -94,3 +104,4 @@ public class DashboardView extends JFrame {
         return p;
     }
 }
+
