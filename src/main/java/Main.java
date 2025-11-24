@@ -33,6 +33,10 @@ public class Main {
     private static DashboardController dashboardController;
     private static StockSearchController stockSearchController;
     private static PortfolioController portfolioController;
+    private static TrendsController trendsController;
+    private static TrendsPresenter trendsPresenter;
+    private static TrendsViewModel trendsViewModel;
+    private static TrendsDataAccess trendsDataAccess;
 
     private static JFrame currentFrame;
     private static String currentUsername;
@@ -44,6 +48,13 @@ public class Main {
             TableInitializer.ensureSchema(dataSource);
             userRepository = new RegisteredUserRepository(dataSource);
             expenseRepository = new RegisteredExpenseRepository(dataSource);
+
+            // Trends (slightly messy)
+            trendsViewModel = new TrendsViewModel();
+            trendsPresenter = new TrendsPresenter(trendsViewModel);
+            trendsDataAccess = new TrendsAdapter(expenseRepository);
+            TrendsInteractor trendsInteractor = new TrendsInteractor(trendsDataAccess, trendsPresenter);
+            trendsController = new TrendsController(trendsInteractor);
 
             // Create interactors
             SignUpInteractor signUpInteractor = new SignUpInteractor(userRepository);
@@ -109,6 +120,8 @@ public class Main {
         DashboardView dashboardView = new DashboardView(
                 dashboardController,
                 stockSearchController,
+                trendsController,
+                trendsViewModel,
                 Main::showLoginView,   // callback to login screen
                 username,              // show welcome message
                 expenseRepository
@@ -204,25 +217,8 @@ public class Main {
     private static void showTrendsView() {
         if (currentFrame != null) currentFrame.dispose();
 
-        // create ViewModel
-        TrendsViewModel trendsViewModel = new TrendsViewModel();
-
-        // create Presenter
-        TrendsPresenter trendsPresenter = new TrendsPresenter(trendsViewModel);
-
-        // create a data adapter for this use case
-        TrendsDataAccess trendsDataAccess = new TrendsAdapter(expenseRepository);
-
-        // create Interactor
-        TrendsInteractor trendsInteractor = new TrendsInteractor(trendsDataAccess, trendsPresenter);
-
-        // create Controller
-        TrendsController trendsController = new TrendsController(trendsInteractor);
-
-        // create View
+        // Use the already-initialized fields
         TrendsView trendsView = new TrendsView(trendsController, trendsViewModel, currentUsername);
-
-        // run View
         currentFrame = trendsView;
         trendsView.setVisible(true);
     }

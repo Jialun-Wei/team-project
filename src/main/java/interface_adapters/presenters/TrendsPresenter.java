@@ -1,8 +1,13 @@
 package interface_adapters.presenters;
 
+import entity.Expense;
 import use_case.trends.TrendsOutputBoundary;
 import use_case.trends.TrendsOutputData;
 import ui.TrendsViewModel;
+
+import java.time.LocalDate;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Presenter for the Trends use case.

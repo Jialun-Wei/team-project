@@ -24,6 +24,6 @@ public class TrendsAdapter implements TrendsDataAccess {
     @Override
     public List<Expense> getExpenses(String username) {
         // Delegate to the existing repository
-        return repo.findByUsername(username); // or whatever public method exists
+        return repo.findByUsername(username);
     }
 }
