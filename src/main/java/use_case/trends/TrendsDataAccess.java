@@ -7,5 +7,5 @@ import java.util.List;
  * Data Access (use case interface) for Trends use case.
  */
 public interface TrendsDataAccess {
-    List<Expense> getExpenses();
+    List<Expense> getExpenses(String username);
 }

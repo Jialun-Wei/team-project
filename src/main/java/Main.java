@@ -14,6 +14,8 @@ import use_case.signup.*;
 import use_case.stocksearch.*;
 import use_case.fetch_news.*;
 import use_case.case5.*;
+import use_case.trends.TrendsDataAccess;
+import use_case.trends.TrendsInteractor;
 
 import javax.sql.DataSource;
 import javax.swing.*;
@@ -200,7 +202,29 @@ public class Main {
     }
 
     private static void showTrendsView() {
-        // ToDo
+        if (currentFrame != null) currentFrame.dispose();
+
+        // create ViewModel
+        TrendsViewModel trendsViewModel = new TrendsViewModel();
+
+        // create Presenter
+        TrendsPresenter trendsPresenter = new TrendsPresenter(trendsViewModel);
+
+        // create a data adapter for this use case
+        TrendsDataAccess trendsDataAccess = new TrendsAdapter(expenseRepository);
+
+        // create Interactor
+        TrendsInteractor trendsInteractor = new TrendsInteractor(trendsDataAccess, trendsPresenter);
+
+        // create Controller
+        TrendsController trendsController = new TrendsController(trendsInteractor);
+
+        // create View
+        TrendsView trendsView = new TrendsView(trendsController, trendsViewModel, currentUsername);
+
+        // run View
+        currentFrame = trendsView;
+        trendsView.setVisible(true);
     }
 
     private static void showExpensesView() {

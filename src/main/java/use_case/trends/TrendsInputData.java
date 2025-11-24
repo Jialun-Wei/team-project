@@ -4,7 +4,6 @@ import java.time.LocalDate;
 
 /**
  * Input data for the Trends use case.
- *
  * This object is created by the Controller and passed into the Interactor.
  */
 public class TrendsInputData {

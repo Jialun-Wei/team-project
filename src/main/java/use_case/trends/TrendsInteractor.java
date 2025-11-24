@@ -34,7 +34,7 @@ public class TrendsInteractor implements TrendsInputBoundary {
     @Override
     public void execute(TrendsInputData inputData) {
         //Load expenses for this user
-        List<Expense> expenses = dataAccess.getExpenses();
+        List<Expense> expenses = dataAccess.getExpenses(inputData.getUsername());
 
         Map<LocalDate, Map<String, Double>> totalExpenses = new TreeMap<>();
 
