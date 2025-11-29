@@ -1,15 +1,18 @@
 package data.usecase4;
+
 import entity.Holding;
 import use_case.trading.TradingDataAccessInterface;
-
+import data.AlphaVantageAPI;
+import java.io.IOException;
 import java.util.*;
+
 
 public class InMemoryTradingDataAccess implements TradingDataAccessInterface{
 
     private final Map<String, Double> userCash;
     private final Map<String, Map<String, Holding>> userHoldings;
     private final Map<String, Map<String, Holding>> holdings = new HashMap<>();
-    
+
     public InMemoryTradingDataAccess() {
         this.userCash = new HashMap<>();
         this.userHoldings = new HashMap<>();
@@ -48,16 +51,16 @@ public class InMemoryTradingDataAccess implements TradingDataAccessInterface{
 
     @Override
     public double getStockPrice(String symbol) {
-        // returning fixed price just for testing (need to replace with API call)
-        return 100.0;
+        /// returning fixed price just for testing (need to replace with API call)
+        // return 100.0;
 
-        // AlphaVantageAPI api = new AlphaVantageAPI();
-        // try {
-        //     return api.getQuote(symbol).getPrice();
-        // } catch (IOException e) {
-        //     // Fallback to a safe value or rethrow
-        //     throw new RuntimeException("Failed to fetch price for " + symbol, e);
-        // }
+        AlphaVantageAPI api = new AlphaVantageAPI();
+        try {
+            return api.getQuote(symbol).getPrice();
+        } catch (IOException e) {
+            // Fallback to a safe value or rethrow if reach api limit
+            throw new RuntimeException("Failed to fetch price for " + symbol, e);
+        }
     }
 
     // Returns the list of holdings of according the username
