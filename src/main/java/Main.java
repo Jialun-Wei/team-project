@@ -83,6 +83,12 @@ public class Main {
             stockSearchController =
                     new StockSearchController(stockSearchInteractor, watchlistRepository);
 
+            //Trading setup
+            tradingData = new InMemoryTradingDataAccess();
+            // Initial cash for testing
+            tradingData.updateCash("testuser", 10000.0);
+
+            // Portfolio repo relies on tradingData
             portfolioRepo = new TradingDataPortfolioRepository(tradingData);
             priceHistoryRepo = new AlphaVantagePriceHistoryRepository();
 
@@ -101,16 +107,10 @@ public class Main {
             portfolioController = new PortfolioController(portfolioInteractor, portfolioPresenter.getViewModel());
 
 
-            //Trading setup
-            tradingData = new InMemoryTradingDataAccess();
-            // Initial cash for testing
-            tradingData.updateCash("testuser", 10000.0);
-
             tradingViewModel = new TradingViewModel();
             TradingPresenter tradingPresenter = new TradingPresenter(tradingViewModel);
             TradingInteractor tradingInteractor = new TradingInteractor(tradingData, tradingPresenter);
             tradingController = new TradingController(tradingInteractor, tradingViewModel);
-
 
             // Start application on the login screen
             showLoginView();
