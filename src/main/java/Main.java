@@ -71,7 +71,9 @@ public class Main {
 
             // Stocks API call
             AlphaVantageAPI api = new AlphaVantageAPI();
-            StockSearchInteractor stockSearchInteractor = new StockSearchInteractor(api);
+            StockSearchPresenter stockSearchPresenter = new StockSearchPresenter();
+            StockSearchInputBoundary stockSearchInteractor =
+                    new StockSearchInteractor(api, stockSearchPresenter);
 
             WatchlistRepository watchlistRepository =
                     new JdbcWatchlistRepository(dataSource);
@@ -220,7 +222,9 @@ public class Main {
         if (currentFrame != null) currentFrame.dispose();
 
         AlphaVantageAPI api = new AlphaVantageAPI();
-        StockSearchInteractor interactor = new StockSearchInteractor(api);
+        StockSearchPresenter stockSearchPresenter = new StockSearchPresenter();
+        StockSearchInputBoundary interactor =
+                new StockSearchInteractor(api, stockSearchPresenter);
 
         // Use a watchlist repository so the stock search controller
         // has access to persisted watched stocks.

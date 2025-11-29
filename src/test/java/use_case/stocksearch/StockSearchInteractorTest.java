@@ -18,7 +18,8 @@ class StockSearchInteractorTest {
     @BeforeEach
     void setUp() {
         mockApi = new MockAlphaVantageAPI();
-        interactor = new StockSearchInteractor(mockApi);
+        StockSearchOutputBoundary outputBoundary = output -> { /* no-op for tests */ };
+        interactor = new StockSearchInteractor(mockApi, outputBoundary);
     }
 
     // Manual mock implementation to avoid Java 23 compatibility issues with Mockito
@@ -204,4 +205,3 @@ class StockSearchInteractorTest {
         assertEquals(2, output.getResults().size());
     }
 }
-
