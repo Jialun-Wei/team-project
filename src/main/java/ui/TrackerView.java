@@ -34,7 +34,7 @@ public class TrackerView extends JFrame {
         this.expenseRepository = expenseRepository;
 
         setTitle("Tracker View");
-        setSize(600, 400);
+        setSize(800, 500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
