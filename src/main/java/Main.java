@@ -38,6 +38,7 @@ public class Main {
     private static DashboardController dashboardController;
     private static StockSearchController stockSearchController;
     private static TradingController tradingController;
+    private static TradingViewModel tradingViewModel;
     private static PortfolioController portfolioController;
 
     private static JFrame currentFrame;
@@ -80,7 +81,7 @@ public class Main {
                 // Initial cash for testing
             tradingData.updateCash("testuser", 10000.0);
 
-            TradingViewModel tradingViewModel = new TradingViewModel();
+            tradingViewModel = new TradingViewModel();
             TradingPresenter tradingPresenter = new TradingPresenter(tradingViewModel);
             TradingInteractor tradingInteractor = new TradingInteractor(tradingData, tradingPresenter);
             tradingController = new TradingController(tradingInteractor, tradingViewModel);
@@ -120,6 +121,10 @@ public class Main {
 
     private static void showDashboardView(String username) {
         if (currentFrame != null) currentFrame.dispose();
+        if (tradingData.getCash(username) == 0.0) {
+            tradingData.updateCash(username, 10000.0);
+        }
+        tradingViewModel.setCashAfterTrade(tradingData.getCash(username));
         
         currentUsername = username; // Store the username for use in other views
 

@@ -4,10 +4,6 @@ import use_case.trading.TradingInputData;
 import use_case.trading.TradingViewModel;
 import javax.swing.*;
 import java.awt.*;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
 
 
 
@@ -28,7 +24,7 @@ public class TradingView extends JFrame {
         this.username = username;
 
         setTitle("Trading");
-        setSize(420, 260);
+        setSize(600, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -38,7 +34,8 @@ public class TradingView extends JFrame {
         actionGroup.add(sellRadioButton);
 
         JPanel form = new JPanel();
-        form.setLayout(new GridLayout(6, 2, 6, 6));
+        form.setLayout(new GridLayout(6, 2, 10, 14));
+        form.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
         form.add(new JLabel("Symbol:"));
         form.add(symbolField);
         form.add(new JLabel("Action:"));
@@ -54,10 +51,19 @@ public class TradingView extends JFrame {
         JButton placeOrderButton = new JButton("Place Order");
         form.add(placeOrderButton);
 
-        setLayout(new BorderLayout(8, 8));
-        add(form, BorderLayout.CENTER);
-        add(messageLabel, BorderLayout.SOUTH);
+        JPanel outer = new JPanel(new BorderLayout(0, 12));
+        outer.add(form, BorderLayout.CENTER);
+
+        JPanel messagePanel = new JPanel(new BorderLayout());
+        messagePanel.setBorder(BorderFactory.createEmptyBorder(0, 16, 12, 16));
+        messageLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        messagePanel.add(messageLabel, BorderLayout.CENTER);
+        outer.add(messagePanel, BorderLayout.SOUTH);
+
+        setLayout(new BorderLayout());
+        add(outer, BorderLayout.CENTER);
         placeOrderButton.addActionListener(e -> placeOrder());
+        updateLabels(controller.getViewModel());
     }
     private void placeOrder() {
         String symbol = symbolField.getText().trim();
@@ -66,12 +72,16 @@ public class TradingView extends JFrame {
                 TradingInputData.Action.BUY : TradingInputData.Action.SELL;
 
         TradingViewModel viewModel = controller.placeOrder(username, symbol, shares, action);
-        
-        cashLabel.setText(String.format("Cash: $%.2f", viewModel.getCashAfterTrade()));
-        holdingLabel.setText(String.format("Holdings: %d shares at $%.2f average cost",
-                viewModel.getTotalSharesAfterTrade(), viewModel.getAverageCostAfterTrade()));
-        valueLabel.setText(String.format("Total Value: $%.2f", viewModel.getTotalHoldingValueAfterTrade()));
-        messageLabel.setText(viewModel.getMessage());
+        updateLabels(viewModel);
     }
+
+    private void updateLabels(TradingViewModel vm) {
+        cashLabel.setText(String.format("Cash: $%.2f", vm.getCashAfterTrade()));
+        holdingLabel.setText(String.format("Holdings: %d shares at $%.2f average cost",
+                vm.getTotalSharesAfterTrade(), vm.getAverageCostAfterTrade()));
+        valueLabel.setText(String.format("Total Value: $%.2f", vm.getTotalHoldingValueAfterTrade()));
+        messageLabel.setText(vm.getMessage());
+    }
+
 
 }

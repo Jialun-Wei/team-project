@@ -49,5 +49,13 @@ public class InMemoryTradingDataAccess implements TradingDataAccessInterface{
     public double getStockPrice(String symbol) {
         // returning fixed price just for testing (need to replace with API call)
         return 100.0;
+
+        // AlphaVantageAPI api = new AlphaVantageAPI();
+        // try {
+        //     return api.getQuote(symbol).getPrice();
+        // } catch (IOException e) {
+        //     // Fallback to a safe value or rethrow
+        //     throw new RuntimeException("Failed to fetch price for " + symbol, e);
+        // }
     }
 }

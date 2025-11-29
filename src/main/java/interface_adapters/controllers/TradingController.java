@@ -19,7 +19,7 @@ public class TradingController {
         return viewModel;
     }
 
-    //public TradingViewModel getViewModel() {
-    //    return viewModel;
-    //}
+    public TradingViewModel getViewModel() {
+       return viewModel;
+    }
 }

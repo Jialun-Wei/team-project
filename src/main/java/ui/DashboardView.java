@@ -138,6 +138,8 @@ public class DashboardView extends JFrame {
                 • News    → opens the News window
                 • Tracker → opens the Tracker window
                 • Stock   → opens the Stock window
+                • Trading → opens the Trading window
+                • Portfolio → opens the Portfolio window
 
                 On the right, you can see your watched stocks.
                 Double-click one to open its details.
