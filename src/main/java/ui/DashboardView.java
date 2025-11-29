@@ -1,9 +1,9 @@
 package ui;
 
 import data.ExpenseRepository;
-import interface_adapters.controllers.DashboardController;
-import interface_adapters.controllers.PortfolioController;
-import interface_adapters.controllers.StockSearchController;
+import interfaceadapters.controllers.DashboardController;
+import interfaceadapters.controllers.PortfolioController;
+import interfaceadapters.controllers.StockSearchController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -79,12 +79,12 @@ public class DashboardView extends JFrame {
                     // Create NewsController similar to Main.showNewsView()
                     data.news.NewsApiDAO newsApiDAO = new data.news.NewsApiDAO();
                     ui.NewsView newsView = new ui.NewsView(null);
-                    interface_adapters.presenters.FetchNewsPresenter presenter =
-                        new interface_adapters.presenters.FetchNewsPresenter(newsView);
+                    interfaceadapters.presenters.FetchNewsPresenter presenter =
+                        new interfaceadapters.presenters.FetchNewsPresenter(newsView);
                     use_case.fetch_news.FetchNewsInteractor interactor =
                         new use_case.fetch_news.FetchNewsInteractor(newsApiDAO, presenter);
-                    interface_adapters.controllers.NewsController newsController =
-                        new interface_adapters.controllers.NewsController(interactor, presenter);
+                    interfaceadapters.controllers.NewsController newsController =
+                        new interfaceadapters.controllers.NewsController(interactor, presenter);
                     newsView.setController(newsController);
                     newsController.fetchNews();
                     newsView.setVisible(true);

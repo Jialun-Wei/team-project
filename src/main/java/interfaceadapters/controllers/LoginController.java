@@ -1,4 +1,4 @@
-package interface_adapters.controllers;
+package interfaceadapters.controllers;
 
 import use_case.login.LoginInputData;
 import use_case.login.LoginInteractor;
