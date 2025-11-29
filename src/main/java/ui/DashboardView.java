@@ -33,9 +33,9 @@ public class DashboardView extends JFrame {
     private static final int NEWS_TAB = 1;
     private static final int TRACKER_TAB = 2;
     private static final int STOCK_TAB = 3;
-    private static final int TRADING_TAB = 4;
     private static final int TRENDS_TAB = 4;
     private static final int PORTFOLIO_TAB = 5;
+    private static final int TRADING_TAB = 6;
 
     public DashboardView(DashboardController dashController,
                          StockSearchController stockController,
@@ -76,9 +76,9 @@ public class DashboardView extends JFrame {
         tabs.addTab("News", buildTabPlaceholder("Open the News window…"));
         tabs.addTab("Tracker", buildTabPlaceholder("Open the Tracker window…"));
         tabs.addTab("Stock", buildTabPlaceholder("Open the Stock window…"));
-        tabs.addTab("Trading", buildTabPlaceholder("Open the Trading window"));
         tabs.addTab("Trends", buildTabPlaceholder("Open the Trends window…"));
         tabs.addTab("Portfolio", buildTabPlaceholder("Open the Portfolio window"));
+        tabs.addTab("Trading", buildTabPlaceholder("Open the Trading window"));
 
         // When user selects a tab, open a new window and reset back to Home
         tabs.addChangeListener(e -> {
