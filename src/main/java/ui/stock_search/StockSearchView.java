@@ -1,4 +1,4 @@
-package ui;
+package ui.stock_search;
 
 import data.AlphaVantageAPI;
 import interface_adapters.controllers.StockSearchController;

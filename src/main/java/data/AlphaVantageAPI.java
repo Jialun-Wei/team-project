@@ -68,7 +68,6 @@ public class AlphaVantageAPI {
 
   /**
    * Search for stocks using SYMBOL_SEARCH endpoint.
-   *
    * @param keywords the search keywords
    * @return list of stock search results
    * @throws IOException if the API call fails or response is invalid
