@@ -1,4 +1,4 @@
-package ui;
+package ui.trading;
 import interface_adapters.controllers.TradingController;
 import use_case.trading.TradingInputData;
 import use_case.trading.TradingViewModel;

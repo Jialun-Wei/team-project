@@ -1,10 +1,13 @@
-package ui;
+package ui.dashboard;
 
 import data.ExpenseRepository;
-import interface_adapters.controllers.DashboardController;
-import interface_adapters.controllers.StockSearchController;
-import interface_adapters.controllers.TradingController;
-import interface_adapters.controllers.TrendsController;
+import interface_adapters.controllers.*;
+import ui.portfolio.PortfolioView;
+import ui.stock_search.StockSearchView;
+import ui.trends.TrendsViewModel;
+import ui.news.NewsView;
+import ui.tracker.TrackerView;
+import ui.trends.TrendsView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,7 +23,7 @@ public class DashboardView extends JFrame {
     private final TradingController tradingController;
     private final TrendsController trendsController;
     private final TrendsViewModel trendsViewModel;
-//    private final PortfolioController portfolioController;
+    private final PortfolioController portfolioController;
     private final Runnable onLogout;
     private final String username;
     private final ExpenseRepository expenseRepository;
@@ -41,6 +44,7 @@ public class DashboardView extends JFrame {
                          TradingController tradingController,
                          TrendsController trendsController,
                          TrendsViewModel trendsViewModel,
+                         PortfolioController portfolioController,
                          Runnable onLogout,
                          String username,
                          ExpenseRepository expenseRepository) {
@@ -49,7 +53,7 @@ public class DashboardView extends JFrame {
         this.tradingController = tradingController;
         this.trendsController = trendsController;
         this.trendsViewModel = trendsViewModel;
-//        this.portfolioController = portfolioController;
+        this.portfolioController = portfolioController;
         this.onLogout = onLogout;
         this.username = username;
         this.expenseRepository = expenseRepository;
@@ -92,7 +96,7 @@ public class DashboardView extends JFrame {
                 case NEWS_TAB -> SwingUtilities.invokeLater(() -> {
                     // Create NewsController similar to Main.showNewsView()
                     data.news.NewsApiDAO newsApiDAO = new data.news.NewsApiDAO();
-                    ui.NewsView newsView = new ui.NewsView(null);
+                    NewsView newsView = new NewsView(null);
                     interface_adapters.presenters.FetchNewsPresenter presenter =
                         new interface_adapters.presenters.FetchNewsPresenter(newsView);
                     use_case.fetch_news.FetchNewsInteractor interactor =
@@ -104,13 +108,13 @@ public class DashboardView extends JFrame {
                     newsView.setVisible(true);
                 });
                 case TRACKER_TAB -> SwingUtilities.invokeLater(() ->
-                        new ui.TrackerView(username, expenseRepository).setVisible(true));
+                        new TrackerView(username, expenseRepository).setVisible(true));
                 case STOCK_TAB -> SwingUtilities.invokeLater(() ->
-                        new ui.StockSearchView(stockController, username).setVisible(true));
+                        new StockSearchView(stockController, username).setVisible(true));
                 case TRENDS_TAB -> SwingUtilities.invokeLater(() ->
-                        new ui.TrendsView(trendsController, trendsViewModel, username).setVisible(true));
-//              // case PORTFOLIO_TAB -> SwingUtilities.invokeLater(() ->
-//                       // new  ui.PortfolioView(portfolioController, username).setVisible(true));
+                        new TrendsView(trendsController, trendsViewModel, username).setVisible(true));
+                case PORTFOLIO_TAB -> SwingUtilities.invokeLater(() ->
+                        new PortfolioView(portfolioController, username).setVisible(true));
                 default -> {}
             }
             // Reset to Home to avoid repeated auto-opens on focus changes
