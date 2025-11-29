@@ -2,24 +2,70 @@
 skinparam classAttributeIconSize 0
 
 package "UI (View)" {
-  class StockSearchView
+  class StockSearchView {
+    - controller: StockSearchController
+    - username: String
+  }
 }
 
 package "Interface Adapters" {
-  class StockSearchController
+  class StockSearchController {
+    - stockSearchInteractor: StockSearchInteractor
+    - watchlistRepository: WatchlistRepository
+    + search(keywords: String): StockSearchOutputData
+    + isWatched(username: String, symbol: String): boolean
+    + setWatched(username: String, symbol: String, name: String, exchange: String, watched: boolean): void
+    + getWatchedSymbols(username: String): List<String>
+  }
 }
 
 package "Use Cases" {
-  class StockSearchInteractor
-  class StockSearchInputData
-  class StockSearchOutputData
+  class StockSearchInteractor {
+    - api: AlphaVantageAPI
+    + execute(input: StockSearchInputData): StockSearchOutputData
+  }
+
+  class StockSearchInputData {
+    - keywords: String
+    + getKeywords(): String
+  }
+
+  class StockSearchOutputData {
+    - success: boolean
+    - message: String
+    - results: List<StockSearchResult>
+    + isSuccess(): boolean
+    + getMessage(): String
+    + getResults(): List<StockSearchResult>
+  }
 }
 
 package "Data / Frameworks" {
-  class AlphaVantageAPI
-  class StockSearchResult
-  interface WatchlistRepository
-  class JdbcWatchlistRepository
+  class AlphaVantageAPI {
+    + searchStocks(keywords: String): List<StockSearchResult>
+    + getQuote(symbol: String): StockQuote
+    + getTimeSeries(symbol: String, interval: String): List<StockPriceData>
+  }
+
+  class StockSearchResult {
+    - symbol: String
+    - name: String
+    - exchange: String
+    - type: String
+    - region: String
+    - currency: String
+  }
+
+  interface WatchlistRepository {
+    + isWatched(username: String, symbol: String): boolean
+    + addWatched(username: String, symbol: String, name: String, exchange: String): void
+    + removeWatched(username: String, symbol: String): void
+    + findSymbolsByUsername(username: String): List<String>
+  }
+
+  class JdbcWatchlistRepository {
+    - dataSource: DataSource
+  }
 }
 
 ' --- Relationships (direction = dependency / call flow) ---
