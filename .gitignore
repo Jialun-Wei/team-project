@@ -37,6 +37,6 @@ build/
 ### Mac OS ###
 .DS_Store
 
-sqllite.db
+app.db
 *.sqlite
 *.sqlite3

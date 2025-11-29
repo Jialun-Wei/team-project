@@ -1,15 +1,34 @@
-import controllers.DashboardController;
-import controllers.LoginController;
-import controllers.SignUpController;
-import data.DataSourceFactory;
-import data.RegisteredExpenseRepository;
-import data.RegisteredUserRepository;
-import data.TableInitializer;
-import ui.LoginView;
-import ui.SignUpView;
-import ui.DashboardView;
-import use_case.login.LoginInteractor;
-import use_case.signup.SignUpInteractor;
+import data.news.*;
+import data.usecase5.*;
+import data.*;
+import data.usecase4.InMemoryTradingDataAccess;
+
+import interface_adapters.controllers.*;
+import interface_adapters.presenters.*;
+
+
+import ui.dashboard.DashboardView;
+import ui.login.LoginView;
+import ui.signup.SignUpView;
+import ui.news.NewsView;
+import ui.portfolio.PortfolioView;
+import ui.portfolio.PortfolioViewModel;
+import ui.stock_search.StockSearchView;
+import ui.tracker.TrackerView;
+import ui.trends.TrendsView;
+import ui.trends.TrendsViewModel;
+import use_case.add_expense.AddExpenseInteractor;
+import use_case.list_expenses.ListExpensesInteractor;
+import use_case.login.*;
+import use_case.portfolio.*;
+import use_case.signup.*;
+import use_case.stocksearch.*;
+import use_case.fetch_news.*;
+import use_case.trading.*;
+
+
+import use_case.trends.TrendsDataAccess;
+import use_case.trends.TrendsInteractor;
 
 import javax.sql.DataSource;
 import javax.swing.*;
@@ -19,29 +38,86 @@ public class Main {
     private static DataSource dataSource;
     private static RegisteredUserRepository userRepository;
     private static RegisteredExpenseRepository expenseRepository;
+    private static InMemoryTradingDataAccess tradingData;
+    private static PortfolioRepository portfolioRepo;
+    private static PriceHistoryRepository priceHistoryRepo;
 
     private static SignUpController signUpController;
     private static LoginController loginController;
     private static DashboardController dashboardController;
+    private static TrackerController trackerController;
+    private static StockSearchController stockSearchController;
+    private static TradingController tradingController;
+    private static TradingViewModel tradingViewModel;
+    private static PortfolioController portfolioController;
+    private static TrendsController trendsController;
+    private static TrendsPresenter trendsPresenter;
+    private static TrendsViewModel trendsViewModel;
+    private static TrendsDataAccess trendsDataAccess;
 
     private static JFrame currentFrame;
+    private static String currentUsername;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             // Setup database
-            dataSource = DataSourceFactory.sqlite("sqllite.db");
+            dataSource = DataSourceFactory.sqlite("app.db");
             TableInitializer.ensureSchema(dataSource);
             userRepository = new RegisteredUserRepository(dataSource);
             expenseRepository = new RegisteredExpenseRepository(dataSource);
 
+            // Trends (slightly messy)
+            trendsViewModel = new TrendsViewModel();
+            trendsPresenter = new TrendsPresenter(trendsViewModel);
+            trendsDataAccess = new TrendsAdapter(expenseRepository);
+            TrendsInteractor trendsInteractor = new TrendsInteractor(trendsDataAccess, trendsPresenter);
+            trendsController = new TrendsController(trendsInteractor);
+
             // Create interactors
             SignUpInteractor signUpInteractor = new SignUpInteractor(userRepository);
             LoginInteractor loginInteractor = new LoginInteractor(userRepository);
+            ListExpensesInteractor listExpensesInteractor = new ListExpensesInteractor(expenseRepository);
+            AddExpenseInteractor addExpenseInteractor     = new AddExpenseInteractor(expenseRepository);
+
+            // Stocks API call
+            AlphaVantageAPI api = new AlphaVantageAPI();
+            StockSearchInteractor stockSearchInteractor = new StockSearchInteractor(api);
+
+            WatchlistRepository watchlistRepository =
+                    new JdbcWatchlistRepository(dataSource);
+
+            stockSearchController =
+                    new StockSearchController(stockSearchInteractor, watchlistRepository);
+
+            portfolioRepo = new TradingDataPortfolioRepository(tradingData);
+            priceHistoryRepo = new AlphaVantagePriceHistoryRepository();
+
+            PortfolioPresenter portfolioPresenter = new PortfolioPresenter(new PortfolioViewModel());
+
+            PortfolioInteractor portfolioInteractor = new PortfolioInteractor(
+                    portfolioRepo,
+                    priceHistoryRepo,
+                    portfolioPresenter
+            );
 
             // Create controllers
             signUpController = new SignUpController(signUpInteractor);
             loginController = new LoginController(loginInteractor);
             dashboardController = new DashboardController();
+            trackerController = new TrackerController(listExpensesInteractor, addExpenseInteractor);
+            portfolioController = new PortfolioController(portfolioInteractor, portfolioPresenter.getViewModel());
+
+
+            //Trading setup
+            tradingData = new InMemoryTradingDataAccess();
+            // Initial cash for testing
+            tradingData.updateCash("testuser", 10000.0);
+
+            tradingViewModel = new TradingViewModel();
+            TradingPresenter tradingPresenter = new TradingPresenter(tradingViewModel);
+            TradingInteractor tradingInteractor = new TradingInteractor(tradingData, tradingPresenter);
+            tradingController = new TradingController(tradingInteractor, tradingViewModel);
+
 
             // Start application on the login screen
             showLoginView();
@@ -77,15 +153,127 @@ public class Main {
 
     private static void showDashboardView(String username) {
         if (currentFrame != null) currentFrame.dispose();
+        if (tradingData.getCash(username) == 0.0) {
+            tradingData.updateCash(username, 10000.0);
+        }
+        tradingViewModel.setCashAfterTrade(tradingData.getCash(username));
+        
+        currentUsername = username; // Store the username for use in other views
 
         DashboardView dashboardView = new DashboardView(
-                dashboardController,
-                Main::showLoginView,   // callback to login screen
-                username,              // show welcome message
-                expenseRepository
+                dashboardController,     // dashboard
+                stockSearchController,   // usecase 1
+                tradingController,       // usecase 4
+                trendsController,        // usecase 2
+                trendsViewModel,         // usecase 2
+                portfolioController,     // usecase 5
+                Main::showLoginView,     // callback to login screen
+                username,                // show welcome message
+                expenseRepository,
+                Main::showTrackerView
         );
 
         currentFrame = dashboardView;
         dashboardView.setVisible(true);
     }
+
+    private static void showNewsView(){
+        NewsApiDAO newsApiDAO = new NewsApiDAO();   // Get DAO
+        try {
+            newsApiDAO.fetchNews("");
+        } catch (NewsApiDAO.RateLimitExceededException e) {
+            System.out.println("Rate Limit Exceeded");
+        }
+
+        // Presenter
+        NewsView view = new NewsView(null);
+        FetchNewsPresenter presenter = new FetchNewsPresenter(view);
+
+        // Interactor
+        FetchNewsInteractor interactor = new FetchNewsInteractor(newsApiDAO, presenter);
+
+        // Controller
+        NewsController controller = new NewsController(interactor, presenter);
+
+        // View
+        view.setController(controller);
+
+        // Initialize the news
+        controller.fetchNews();
+    }
+
+    private static void showTrackerView(String username) {
+        TrackerView trackerView = new TrackerView(username, trackerController);
+        trackerView.setVisible(true);
+    }
+
+    private static void showPortfolioView() {
+        // Use Case 5: Portfolio performance diagnostics
+        if (currentFrame != null) currentFrame.dispose();
+
+        // create ViewModel
+        PortfolioViewModel viewModel = new PortfolioViewModel();
+
+        // create Presenter（implement PortfolioOutputBoundary）
+        PortfolioPresenter presenter = new PortfolioPresenter(viewModel);
+
+        TradingDataAccessInterface tradingDataAccess = new InMemoryTradingDataAccess();
+
+        // create Interactor（implement PortfolioInputBoundary）
+        PortfolioInputBoundary interactor = new PortfolioInteractor(
+                new TradingDataPortfolioRepository(tradingDataAccess),
+                new AlphaVantagePriceHistoryRepository(),
+                presenter
+        );
+
+        // create Controller（dependent on InputBoundary + ViewModel）
+        PortfolioController controller = new PortfolioController(interactor, viewModel);
+
+        // create View（dependent on Controller + username）
+        PortfolioView view = new PortfolioView(controller, currentUsername);
+
+        currentFrame = view;
+        view.setVisible(true);
+    }
+
+    private static void showInvestmentView() {
+        // ToDo
+    }
+
+    private static void showStockPricesView() {
+        if (currentFrame != null) currentFrame.dispose();
+
+        AlphaVantageAPI api = new AlphaVantageAPI();
+        StockSearchInteractor interactor = new StockSearchInteractor(api);
+
+        // Use a watchlist repository so the stock search controller
+        // has access to persisted watched stocks.
+        WatchlistRepository watchlistRepository =
+                new JdbcWatchlistRepository(dataSource);
+
+        StockSearchController controller =
+                new StockSearchController(interactor, watchlistRepository);
+
+        StockSearchView view = new StockSearchView(
+                controller,
+                currentUsername
+        );
+
+        currentFrame = view;
+        view.setVisible(true);
+    }
+
+    private static void showTrendsView() {
+        if (currentFrame != null) currentFrame.dispose();
+
+        // Use the already-initialized fields
+        TrendsView trendsView = new TrendsView(trendsController, trendsViewModel, currentUsername);
+        currentFrame = trendsView;
+        trendsView.setVisible(true);
+    }
+
+    private static void showExpensesView() {
+        // ToDo
+    }
 }
+
