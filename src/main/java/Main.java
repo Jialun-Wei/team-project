@@ -81,7 +81,9 @@ public class Main {
 
             // Stocks API call
             AlphaVantageAPI api = new AlphaVantageAPI();
-            StockSearchInteractor stockSearchInteractor = new StockSearchInteractor(api);
+            StockSearchPresenter stockSearchPresenter = new StockSearchPresenter();
+            StockSearchInputBoundary stockSearchInteractor =
+                    new StockSearchInteractor(api, stockSearchPresenter);
 
             WatchlistRepository watchlistRepository =
                     new JdbcWatchlistRepository(dataSource);
@@ -89,6 +91,12 @@ public class Main {
             stockSearchController =
                     new StockSearchController(stockSearchInteractor, watchlistRepository);
 
+            //Trading setup
+            tradingData = new InMemoryTradingDataAccess();
+            // Initial cash for testing
+            tradingData.updateCash("testuser", 10000.0);
+
+            // Portfolio repo relies on tradingData
             portfolioRepo = new TradingDataPortfolioRepository(tradingData);
             priceHistoryRepo = new AlphaVantagePriceHistoryRepository();
 
@@ -108,16 +116,10 @@ public class Main {
             portfolioController = new PortfolioController(portfolioInteractor, portfolioPresenter.getViewModel());
 
 
-            //Trading setup
-            tradingData = new InMemoryTradingDataAccess();
-            // Initial cash for testing
-            tradingData.updateCash("testuser", 10000.0);
-
             tradingViewModel = new TradingViewModel();
             TradingPresenter tradingPresenter = new TradingPresenter(tradingViewModel);
             TradingInteractor tradingInteractor = new TradingInteractor(tradingData, tradingPresenter);
             tradingController = new TradingController(tradingInteractor, tradingViewModel);
-
 
             // Start application on the login screen
             showLoginView();
@@ -161,12 +163,12 @@ public class Main {
         currentUsername = username; // Store the username for use in other views
 
         DashboardView dashboardView = new DashboardView(
-                dashboardController,     // dashboard
-                stockSearchController,   // usecase 1
-                tradingController,       // usecase 4
-                trendsController,        // usecase 2
-                trendsViewModel,         // usecase 2
-                portfolioController,     // usecase 5
+                dashboardController,
+                stockSearchController,
+                tradingController,
+                trendsController,
+                trendsViewModel,
+                portfolioController,
                 Main::showLoginView,     // callback to login screen
                 username,                // show welcome message
                 expenseRepository,
@@ -244,7 +246,9 @@ public class Main {
         if (currentFrame != null) currentFrame.dispose();
 
         AlphaVantageAPI api = new AlphaVantageAPI();
-        StockSearchInteractor interactor = new StockSearchInteractor(api);
+        StockSearchPresenter stockSearchPresenter = new StockSearchPresenter();
+        StockSearchInputBoundary interactor =
+                new StockSearchInteractor(api, stockSearchPresenter);
 
         // Use a watchlist repository so the stock search controller
         // has access to persisted watched stocks.

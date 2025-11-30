@@ -38,7 +38,7 @@ public class DashboardView extends JFrame {
     private static final int NEWS_TAB = 1;
     private static final int TRACKER_TAB = 2;
     private static final int STOCK_TAB = 3;
-    private static final int TRADER_TAB = 4;
+    private static final int TRADING_TAB = 4;
     private static final int TRENDS_TAB = 5;
     private static final int PORTFOLIO_TAB = 6;
 
@@ -122,6 +122,8 @@ public class DashboardView extends JFrame {
                         new TrendsView(trendsController, trendsViewModel, username).setVisible(true));
                 case PORTFOLIO_TAB -> SwingUtilities.invokeLater(() ->
                         new PortfolioView(portfolioController, username).setVisible(true));
+                case TRADING_TAB -> SwingUtilities.invokeLater(() ->
+                        new TradingView(tradingController, stockController, username).setVisible(true));
                 default -> {}
             }
             // Reset to Home to avoid repeated auto-opens on focus changes

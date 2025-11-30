@@ -12,7 +12,7 @@ public interface TradingDataAccessInterface {
     void updateHolding(String username, Holding holding);
     void removeHolding(String username, String symbol);
 
-    // Returns the current stock price by calling alpha vantage API (need to replace)
+    //returns the current stock price by calling alpha vantage API (need to replace)
     double getStockPrice(String symbol);
 
     // Returns the list of holdings of according the username
