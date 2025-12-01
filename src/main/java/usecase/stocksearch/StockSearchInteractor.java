@@ -77,15 +77,12 @@ public final class StockSearchInteractor implements StockSearchInputBoundary {
                 );
             }
             catch (RuntimeException runtimeException) {
-                // CHECKSTYLE:OFF: IllegalCatch
-                // RuntimeException may be thrown by API implementations
-                // and must be caught to provide user-friendly error messages
+
                 result = new StockSearchOutputData(
                         false,
                         "Error: " + runtimeException.getMessage(),
                         new ArrayList<>()
                 );
-                // CHECKSTYLE:ON: IllegalCatch
             }
         }
 
