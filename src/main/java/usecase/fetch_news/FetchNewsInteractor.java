@@ -1,6 +1,6 @@
 package usecase.fetch_news;
 
-import data.news.NewsApiDAO;
+import fetch_news.NewsApiDAO;
 import entity.News;
 import java.util.List;
 
@@ -24,7 +24,7 @@ public class FetchNewsInteractor implements FetchNewsInputBoundary {
 
             presenter.presentNews(outputData.getNewsList());
 
-        } catch (NewsApiDAO.RateLimitExceededException e) {
+        } catch (NewsDataAccessInterface.DataFetchException e) {
             // DAO reached the access limit
             FetchNewsOutputData outputData = new FetchNewsOutputData(e.getMessage());
             presenter.presentError(outputData.getErrorMessage());
