@@ -75,7 +75,7 @@ public class Main {
             LoginInteractor loginInteractor = new LoginInteractor(userRepository);
 
             // Stocks API call
-            AlphaVantageAPI api = new AlphaVantageAPI();
+            AlphaVantage api = new AlphaVantage();
             StockSearchPresenter stockSearchPresenter = new StockSearchPresenter();
             StockSearchInputBoundary stockSearchInteractor =
                     new StockSearchInteractor(api, stockSearchPresenter);
@@ -232,7 +232,7 @@ public class Main {
     private static void showStockPricesView() {
         if (currentFrame != null) currentFrame.dispose();
 
-        AlphaVantageAPI api = new AlphaVantageAPI();
+        AlphaVantage api = new AlphaVantage();
         StockSearchPresenter stockSearchPresenter = new StockSearchPresenter();
         StockSearchInputBoundary interactor =
                 new StockSearchInteractor(api, stockSearchPresenter);
