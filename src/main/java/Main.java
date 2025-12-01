@@ -184,7 +184,7 @@ public class Main {
         NewsApiDAO newsApiDAO = new NewsApiDAO();   // Get DAO
         try {
             newsApiDAO.fetchNews("");
-        } catch (NewsApiDAO.RateLimitExceededException e) {
+        } catch (NewsDataAccessInterface.DataFetchException e) {
             System.out.println("Rate Limit Exceeded");
         }
 
