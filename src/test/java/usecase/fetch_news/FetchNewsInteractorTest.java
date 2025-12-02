@@ -11,6 +11,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -218,7 +219,7 @@ public class FetchNewsInteractorTest {
         assertTrue(result.isEmpty());
     }
 
-//  @Disabled("To save API limit for now")
+  @Disabled("To save API limit for now")
     @Test
     public void daoRealIntegrationTest() {
         // REMARK: This is the only real api call in the test. When the limit is reached, the test will fail,
