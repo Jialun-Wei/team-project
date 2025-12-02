@@ -1,6 +1,6 @@
 package ui.trends;
 
-import interface_adapters.controllers.TrendsController;
+import interfaceadapters.trends.TrendsController;
 
 import javax.swing.*;
 import java.awt.*;

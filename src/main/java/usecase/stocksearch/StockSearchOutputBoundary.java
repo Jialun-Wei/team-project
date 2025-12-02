@@ -13,5 +13,3 @@ public interface StockSearchOutputBoundary {
    */
   void present(StockSearchOutputData output);
 }
-
-
