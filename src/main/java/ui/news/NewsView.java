@@ -98,8 +98,6 @@ public class NewsView extends javax.swing.JFrame {
                     }
                     catch (NewsDataAccessInterface.DataFetchException | URISyntaxException | IOException exception) {
                         exception.printStackTrace();
-                        JOptionPane.showMessageDialog(null, "Could not open URL: "
-                                + exception.getMessage(), "URL Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             });
@@ -113,7 +111,7 @@ public class NewsView extends javax.swing.JFrame {
      * Show the error message.
      * @param message why the error happens. */
     public void showError(String message) {
-        JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, message, "Failed to fetch news: ", JOptionPane.ERROR_MESSAGE);
     }
 
     /**

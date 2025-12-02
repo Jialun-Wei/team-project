@@ -79,7 +79,7 @@ public class NewsApiDao implements NewsDataAccessInterface {
 
         }
         catch (IOException | JsonParseException exception) {
-            throw new RuntimeException("Error fetching or parsing news: " + exception.getMessage(), exception);
+            throw new DataFetchException("Error fetching or parsing news: " + exception.getMessage());
         }
 
         return newsList;
