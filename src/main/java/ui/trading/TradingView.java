@@ -3,8 +3,8 @@ import interface_adapters.controllers.TradingController;
 import interface_adapters.controllers.StockSearchController;
 import usecase.trading.TradingInputData;
 import usecase.trading.TradingViewModel;
-import usecase.StockSearchOutputData;
-import data.AlphaVantageAPI;
+import usecase.stocksearch.StockSearchOutputData;
+import data.AlphaVantage;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,7 +21,7 @@ public class TradingView extends JFrame {
     private final String username;
 
     private final JTextField symbolField = new JTextField(10);
-    private final JList<AlphaVantageAPI.StockSearchResult> suggestions = new JList<>();
+    private final JList<AlphaVantage.StockSearchResult> suggestions = new JList<>();
     private final JScrollPane suggestionsScroll = new JScrollPane(suggestions);
     private SwingWorker<StockSearchOutputData, Void> currentSearchWorker;
     private final Timer searchTimer = new Timer(400, e -> runSearch());
@@ -32,6 +32,7 @@ public class TradingView extends JFrame {
     private final JLabel valueLabel = new JLabel("Total Value: $0.00");
     private final JLabel messageLabel = new JLabel("");
     private final JLabel priceLabel = new JLabel("Price: $");
+    private boolean suppressSearchRestart = false;
 
     public TradingView(TradingController controller, StockSearchController stockSearchController, String username) {
         this.controller = controller;
@@ -62,8 +63,8 @@ public class TradingView extends JFrame {
         suggestions.setCellRenderer((list, value, index, isSelected, cellHasFocus) -> {
             DefaultListCellRenderer base = new DefaultListCellRenderer();
             JLabel lbl = (JLabel) base.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-            if (value instanceof AlphaVantageAPI.StockSearchResult) {
-                AlphaVantageAPI.StockSearchResult r = (AlphaVantageAPI.StockSearchResult) value;
+            if (value instanceof AlphaVantage.StockSearchResult) {
+                AlphaVantage.StockSearchResult r = (AlphaVantage.StockSearchResult) value;
                 lbl.setText(r.getSymbol() + " — " + r.getName() + " (" + r.getExchange() + ")");
                 lbl.setFont(lbl.getFont().deriveFont(13f));
             }
@@ -133,16 +134,39 @@ public class TradingView extends JFrame {
             public void changedUpdate(DocumentEvent e) {
                 restartTimer();
             }
-            private void restartTimer() { searchTimer.restart(); }
+            private void restartTimer() {
+                if (!suppressSearchRestart) {
+                    searchTimer.restart();
+                }
+            }
+        });
+
+        // select from suggestions
+        suggestions.addListSelectionListener(e -> {
+            if (e.getValueIsAdjusting()) return;
+            AlphaVantageAPI.StockSearchResult sel = suggestions.getSelectedValue();
+            if (sel != null) {
+                suppressSearchRestart = true;
+                symbolField.setText(sel.getSymbol());
+                suppressSearchRestart = false;
+                suggestionsScroll.setVisible(false);
+                loadPrice(sel.getSymbol());
+            }
+        });
+        symbolField.addActionListener(e -> {
+            suggestionsScroll.setVisible(false);
+            loadPrice(symbolField.getText().trim());
         });
 
         suggestions.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
-                    AlphaVantageAPI.StockSearchResult selected = suggestions.getSelectedValue();
+                    AlphaVantage.StockSearchResult selected = suggestions.getSelectedValue();
                     if (selected != null) {
+                        suppressSearchRestart = true;
                         symbolField.setText(selected.getSymbol());
+                        suppressSearchRestart = false;
                         loadPrice(selected.getSymbol());
                         suggestionsScroll.setVisible(false);
                     }
@@ -178,7 +202,7 @@ public class TradingView extends JFrame {
                         suggestionsScroll.setVisible(false);
                         return;
                     }
-                    suggestions.setListData(output.getResults().toArray(new AlphaVantageAPI.StockSearchResult[0]));
+                    suggestions.setListData(output.getResults().toArray(new AlphaVantage.StockSearchResult[0]));
                     suggestionsScroll.setVisible(true);
                     revalidate();
                     repaint();
@@ -199,7 +223,7 @@ public class TradingView extends JFrame {
         new SwingWorker<Double, Void>() {
             @Override
             protected Double doInBackground() throws Exception {
-                return new AlphaVantageAPI().getQuote(symbol).getPrice();
+                return new AlphaVantage().getQuote(symbol).getPrice();
             }
             @Override
             protected void done() {

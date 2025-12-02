@@ -1,8 +1,8 @@
-import data.news.*;
 import data.usecase5.*;
 import data.*;
 import data.usecase4.JsonTradingDataAccess;
 
+import fetch_news.NewsApiDAO;
 import interface_adapters.controllers.*;
 import interface_adapters.presenters.*;
 
@@ -17,8 +17,8 @@ import ui.stock_search.StockSearchView;
 import ui.tracker.TrackerView;
 import ui.trends.TrendsView;
 import ui.trends.TrendsViewModel;
-import usecase.StockSearchInputBoundary;
-import usecase.StockSearchInteractor;
+import usecase.stocksearch.StockSearchInputBoundary;
+import usecase.stocksearch.StockSearchInteractor;
 import usecase.add_expense.AddExpenseInteractor;
 import usecase.list_expenses.ListExpensesInteractor;
 import usecase.login.*;
@@ -82,7 +82,7 @@ public class Main {
             AddExpenseInteractor addExpenseInteractor     = new AddExpenseInteractor(expenseRepository);
 
             // Stocks API call
-            AlphaVantageAPI api = new AlphaVantageAPI();
+            AlphaVantage api = new AlphaVantage();
             StockSearchPresenter stockSearchPresenter = new StockSearchPresenter();
             StockSearchInputBoundary stockSearchInteractor =
                     new StockSearchInteractor(api, stockSearchPresenter);
@@ -184,7 +184,7 @@ public class Main {
         NewsApiDAO newsApiDAO = new NewsApiDAO();   // Get DAO
         try {
             newsApiDAO.fetchNews("");
-        } catch (NewsApiDAO.RateLimitExceededException e) {
+        } catch (NewsDataAccessInterface.DataFetchException e) {
             System.out.println("Rate Limit Exceeded");
         }
 
@@ -246,7 +246,7 @@ public class Main {
     private static void showStockPricesView() {
         if (currentFrame != null) currentFrame.dispose();
 
-        AlphaVantageAPI api = new AlphaVantageAPI();
+        AlphaVantage api = new AlphaVantage();
         StockSearchPresenter stockSearchPresenter = new StockSearchPresenter();
         StockSearchInputBoundary interactor =
                 new StockSearchInteractor(api, stockSearchPresenter);
