@@ -100,6 +100,59 @@ class TradingInteractorTest {
     }
 
     @Test
+    void buy_existingHolding_recomputesAverageCost() {
+        dao.cash = 1000.0;
+        dao.updateHolding("u", new Holding("AAPL", 2, 100.0));
+
+        interactor.placeOrder(new TradingInputData("u", "AAPL", TradingInputData.Action.BUY, 3));
+
+        Holding h = dao.getHolding("u", "AAPL");
+        assertNotNull(h);
+        assertEquals(5, h.getShares());
+        assertEquals(100.0, h.getAvgCost(), 0.001);
+        assertEquals(1000.0 - 3 * dao.stubPrice, dao.getCash("u"), 0.001);
+        assertTrue(presenter.last.isSuccess());
+        assertEquals(1, dao.savedOrders.size());
+    }
+
+    @Test
+    void sell_partialLeavesHolding() {
+        dao.cash = 200.0;
+        dao.updateHolding("u", new Holding("AAPL", 5, 50.0));
+        dao.stubPrice = 120.0;
+
+        interactor.placeOrder(new TradingInputData("u", "AAPL", TradingInputData.Action.SELL, 2));
+
+        Holding h = dao.getHolding("u", "AAPL");
+        assertNotNull(h);
+        assertEquals(3, h.getShares());
+        assertEquals(50.0, h.getAvgCost(), 0.001);
+        assertEquals(200.0 + 2 * 120.0, dao.getCash("u"), 0.001);
+        assertTrue(presenter.last.isSuccess());
+        assertEquals(1, dao.savedOrders.size());
+    }
+
+    @Test
+    void nullAction_fails() {
+        dao.cash = 300.0;
+        interactor.placeOrder(new TradingInputData("u", "AAPL", null, 1));
+        assertNotNull(presenter.last);
+        assertFalse(presenter.last.isSuccess());
+        assertNull(dao.getHolding("u", "AAPL"));
+        assertEquals(0, dao.savedOrders.size());
+    }
+
+    @Test
+    void nullSymbol_fails() {
+        dao.cash = 300.0;
+        interactor.placeOrder(new TradingInputData("u", null, TradingInputData.Action.BUY, 1));
+        assertNotNull(presenter.last);
+        assertFalse(presenter.last.isSuccess());
+        assertNull(dao.getHolding("u", null));
+        assertEquals(0, dao.savedOrders.size());
+    }
+
+    @Test
     void buy_withoutEnoughCash_fails() {
         dao.cash = 100.0;
         interactor.placeOrder(new TradingInputData("u", "AAPL", TradingInputData.Action.BUY, 5));
@@ -159,29 +212,15 @@ class TradingInteractorTest {
                 interactor.placeOrder(new TradingInputData("u", "AAPL", TradingInputData.Action.BUY, 1))
         );
         assertEquals("quote fail", ex.getMessage());
-        // state should be unchanged
         assertNull(dao.getHolding("u", "AAPL"));
         assertEquals(500.0, dao.getCash("u"), 0.001);
         assertEquals(0, dao.savedOrders.size());
     }
-    @Test
-    void nullAction_fails() {
-        dao.cash = 500.0;
-        interactor.placeOrder(new TradingInputData("u", "AAPL", null, 1));
-        assertFalse(presenter.last.isSuccess());
-    }
-
-    @Test
-    void nullSymbol_fails() {
-        dao.cash = 500.0;
-        interactor.placeOrder(new TradingInputData("u", null, TradingInputData.Action.BUY, 1));
-        assertFalse(presenter.last.isSuccess());
-    }
 
     @Test
     void outputData_getters() {
-        TradingOutputData out = new TradingOutputData("msg", true, 10, 2.5, 3, 7.5);
-        assertEquals("msg", out.getMessage());
+        TradingOutputData out = new TradingOutputData("messages", true, 10, 2.5, 3, 7.5);
+        assertEquals("messages", out.getMessage());
         assertTrue(out.isSuccess());
         assertEquals(10, out.getCashAfterTrade());
         assertEquals(2.5, out.getAverageCostAfterTrade());
