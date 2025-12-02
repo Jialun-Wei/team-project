@@ -68,28 +68,17 @@ public class NewsComponentFactory {
 
     /**
      * Creates a JPanel that stacks title and time vertically and aligns to the left.
-     * Uses GridLayout(2, 1).
      *
      * @return A stacking JPanel.
      */
     public JPanel createVerticalStackingPanel() {
-        final JPanel textPanel = new JPanel(new java.awt.GridLayout(2, 1));
+        final JPanel textPanel = new JPanel();
+
+        textPanel.setLayout(new javax.swing.BoxLayout(textPanel, javax.swing.BoxLayout.Y_AXIS));
+        textPanel.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+
         return textPanel;
     }
-
-    // TODO 假如还有api的话试着把UI改回原来的样子并且录屏
-//    public JPanel createVerticalStackingPanel() {
-//        JPanel textPanel = new JPanel();
-//
-//        // 1. 设置 BoxLayout，沿 Y 轴 (垂直) 堆叠
-//        textPanel.setLayout(new javax.swing.BoxLayout(textPanel, javax.swing.BoxLayout.Y_AXIS));
-//
-//        // 2. 关键：强制组件在 X 轴上左对齐，以避免 FlowLayout 居中残留的影响
-//        //    (这确保了标题和时间不会被推到面板中间)
-//        textPanel.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
-//
-//        return textPanel;
-//    }
 
     /**
      * Creates a JPanel with a GridLayout for the main news display.
