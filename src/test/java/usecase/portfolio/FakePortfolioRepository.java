@@ -1,6 +1,5 @@
 package usecase.portfolio;
 
-import data.usecase5.PortfolioRepository;
 import entity.Holding;
 
 import java.util.ArrayList;

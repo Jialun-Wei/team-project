@@ -1,6 +1,7 @@
 package data.usecase5;
 
 import entity.Holding;
+import usecase.portfolio.PortfolioRepository;
 import usecase.trading.TradingDataAccessInterface;
 
 import java.util.List;

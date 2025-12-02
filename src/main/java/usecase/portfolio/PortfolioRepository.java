@@ -1,4 +1,4 @@
-package data.usecase5;
+package usecase.portfolio;
 
 import entity.Holding;
 import java.util.List;
