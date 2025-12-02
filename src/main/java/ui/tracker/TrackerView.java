@@ -17,7 +17,7 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 import entity.Expense;
-import interface_adapters.controllers.TrackerController;
+import interfaceadapters.controllers.TrackerController;
 import usecase.add_expense.AddExpenseOutputData;
 import usecase.list_expenses.ListExpensesOutputData;
 
