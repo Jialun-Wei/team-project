@@ -1,8 +1,17 @@
 {
   "userCash": {
-    "1234567": 4770.4
+    "1234567": 4487.3,
+    "ooo": 9433.800000000001,
+    "ooooo": 7138.1
   },
   "userHoldings": {
+    "ooo": {
+      "AAPL": {
+        "symbol": "AAPL",
+        "shares": 2,
+        "avgCost": 283.1
+      }
+    },
     "1234567": {
       "aapl": {
         "symbol": "aapl",
@@ -16,8 +25,15 @@
       },
       "AAPL": {
         "symbol": "AAPL",
-        "shares": 9,
+        "shares": 10,
         "avgCost": 283.1
+      }
+    },
+    "ooooo": {
+      "AAPL": {
+        "symbol": "AAPL",
+        "shares": 10,
+        "avgCost": 286.19
       }
     }
   },
@@ -66,6 +82,60 @@
       "shares": 1,
       "price": 283.1,
       "totalAmount": 283.1
+    },
+    {
+      "timestamp": "2025-12-02T18:57:00.296472Z",
+      "username": "1234567",
+      "symbol": "AAPL",
+      "action": "BUY",
+      "shares": 2,
+      "price": 283.1,
+      "totalAmount": 566.2
+    },
+    {
+      "timestamp": "2025-12-02T18:57:06.567117Z",
+      "username": "1234567",
+      "symbol": "AAPL",
+      "action": "SELL",
+      "shares": 1,
+      "price": 283.1,
+      "totalAmount": 283.1
+    },
+    {
+      "timestamp": "2025-12-02T18:58:47.969357Z",
+      "username": "ooo",
+      "symbol": "AAPL",
+      "action": "BUY",
+      "shares": 3,
+      "price": 283.1,
+      "totalAmount": 849.3000000000001
+    },
+    {
+      "timestamp": "2025-12-02T18:58:53.521426Z",
+      "username": "ooo",
+      "symbol": "AAPL",
+      "action": "SELL",
+      "shares": 1,
+      "price": 283.1,
+      "totalAmount": 283.1
+    },
+    {
+      "timestamp": "2025-12-02T21:29:50.237499Z",
+      "username": "ooooo",
+      "symbol": "AAPL",
+      "action": "BUY",
+      "shares": 20,
+      "price": 286.19,
+      "totalAmount": 5723.8
+    },
+    {
+      "timestamp": "2025-12-02T21:29:54.991677Z",
+      "username": "ooooo",
+      "symbol": "AAPL",
+      "action": "SELL",
+      "shares": 10,
+      "price": 286.19,
+      "totalAmount": 2861.9
     }
   ]
 }
